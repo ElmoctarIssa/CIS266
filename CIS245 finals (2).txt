@@ -1,304 +1,384 @@
-﻿CREATE TABLE CUSTOMER
-(
-customer_id NUMBER primary key,
-first_name VARCHAR(250),
-last_name VARCHAR(250),
-username VARCHAR(250),
-credit_limit NUMBER
-);
+﻿CREATE TABLE CUSTOMER 
+( 
+customer_id NUMBER primary key, 
+first_name VARCHAR(250), 
+last_name VARCHAR(250), 
+username VARCHAR(250), 
+credit_limit NUMBER 
+)
+;
 
+CREATE INDEX    
+ix_customer_username ON CUSTOMER (username)
+;
 
-CREATE INDEX   
-ix_customer_username ON CUSTOMER (username);
+CREATE SEQUENCE customer_sequence    
+START WITH  1   
+INCREMENT BY  1
+;
 
+CREATE TABLE ADDRESS   
+(   
+    address_id NUMBER primary key,   
+    customer_id NUMBER,   
+    street VARCHAR(250),   
+    city VARCHAR(250),   
+    state CHAR(2), 
+    zip CHAR (5), 
+    phone CHAR(14), 
+    constraint fk_address_customer_id FOREIGN KEY (customer_id)  REFERENCES CUSTOMER(customer_id) 
+)
+;
 
-CREATE SEQUENCE customer_sequence   
-START WITH  1  
-INCREMENT BY  1;
+CREATE INDEX    
+ix_address_state ON ADDRESS (state)
+;
 
+CREATE SEQUENCE address_sequence    
+START WITH  1   
+INCREMENT BY  1
+;
 
+CREATE TABLE ORDER_DETAIL 
+( 
+customer_id NUMBER, 
+order_id NUMBER primary key, 
+order_date DATE, 
+order_status NUMBER, 
+constraint fk_order_customer_id FOREIGN KEY (customer_id) REFERENCES CUSTOMER(customer_id) 
+)
+;
 
+CREATE SEQUENCE order_detail_sequence   
+START WITH  1 
+INCREMENT BY  1
+;
 
-CREATE TABLE ADDRESS  
-(  
-    address_id NUMBER primary key,  
-    customer_id NUMBER,  
-    street VARCHAR(250),  
-    city VARCHAR(250),  
-    state CHAR(2),
-    zip CHAR (5),
-    phone CHAR(14),
-    constraint fk_address_customer_id FOREIGN KEY (customer_id)  REFERENCES CUSTOMER(customer_id)
-);
+CREATE TABLE ITEM 
+( 
+item_id NUMBER primary key, 
+item_name VARCHAR(250), 
+list_price NUMBER(7,2), 
+date_added DATE 
+)
+;
 
+CREATE INDEX    
+ix_name ON ITEM (item_name)
+;
 
-CREATE INDEX   
-ix_address_state ON ADDRESS (state);
+CREATE SEQUENCE item_sequence   
+START WITH  1   
+INCREMENT BY  1
+;
 
+CREATE TABLE LINE_ITEM 
+( 
+order_id NUMBER, 
+item_id NUMBER, 
+quantity NUMBER, 
+discount NUMBER, 
+CONSTRAINT pk_line_item primary key (order_id, item_id), 
+CONSTRAINT fk_line_order_id foreign key (order_id) REFERENCES ORDER_DETAIL (order_id), 
+CONSTRAINT fk_line_item_id foreign key (item_id) REFERENCES ITEM (item_id) 
+)
+;
 
-CREATE SEQUENCE address_sequence   
-START WITH  1  
-INCREMENT BY  1;
+CREATE TABLE CUSTOMER_LOG 
+( 
+event_type CHAR(6), 
+event_date DATE, 
+customer_id NUMBER, 
+first_name VARCHAR(250), 
+last_name VARCHAR(250), 
+username VARCHAR(250), 
+credit_limit NUMBER 
+)
+;
 
+CREATE INDEX    
+ix_cust_log ON CUSTOMER_LOG (customer_id)
+;
 
+CREATE TABLE ORDER_DETAIL_LOG 
+( 
+event_type CHAR(6), 
+event_date DATE, 
+order_id NUMBER, 
+customer_id NUMBER, 
+order_date DATE, 
+order_status NUMBER 
+)
+;
 
+CREATE INDEX    
+ix_order_detail ON ORDER_DETAIL_LOG (order_id)
+;
 
-CREATE TABLE ORDER_DETAIL
-(
-customer_id NUMBER,
-order_id NUMBER primary key,
-order_date DATE,
-order_status NUMBER,
-constraint fk_order_customer_id FOREIGN KEY (customer_id) REFERENCES CUSTOMER(customer_id)
-);
-
-
-CREATE SEQUENCE order_detail_sequence  
-START WITH  1
-INCREMENT BY  1;
-
-
-
-
-CREATE TABLE ITEM
-(
-item_id NUMBER primary key,
-item_name VARCHAR(250),
-list_price NUMBER(7,2),
-date_added DATE
-);
-
-
-CREATE INDEX   
-ix_name ON ITEM (item_name);
-
-
-CREATE SEQUENCE item_sequence  
-START WITH  1  
-INCREMENT BY  1;
-
-
-
-
-CREATE TABLE LINE_ITEM
-(
-order_id NUMBER,
-item_id NUMBER,
-quantity NUMBER,
-discount NUMBER,
-CONSTRAINT pk_line_item primary key (order_id, item_id),
-CONSTRAINT fk_line_order_id foreign key (order_id) REFERENCES ORDER_DETAIL (order_id),
-CONSTRAINT fk_line_item_id foreign key (item_id) REFERENCES ITEM (item_id)
-);
-
-
-
-
-
-
-CREATE TABLE CUSTOMER_LOG
-(
-event_type CHAR(6),
-event_date DATE,
-customer_id NUMBER,
-first_name VARCHAR(250),
-last_name VARCHAR(250),
-username VARCHAR(250),
-credit_limit NUMBER
-);
-
-
-CREATE INDEX   
-ix_cust_log ON CUSTOMER_LOG (customer_id);
-
-
-CREATE TABLE ORDER_DETAIL_LOG
-(
-event_type CHAR(6),
-event_date DATE,
-order_id NUMBER,
-customer_id NUMBER,
-order_date DATE,
-order_status NUMBER
-);
-
-
-CREATE INDEX   
-ix_order_detail ON ORDER_DETAIL_LOG (order_id);
-
-
-
-
-
-
-CREATE OR REPLACE FUNCTION WithDiscount (list_price NUMBER, discount NUMBER) 
-RETURN NUMBER 
-AS 
-BEGIN 
-    RETURN ROUND(list_price - (list_price * discount),2); 
-END;
-
-
-CREATE OR REPLACE FUNCTION WithSalesTax (list_price NUMBER) 
-RETURN NUMBER 
-AS 
-BEGIN 
-    RETURN ROUND(list_price * 1.06,2); 
-END;
-
-
-
-
-CREATE OR REPLACE PROCEDURE purchase_list (in_credit_limit NUMBER) IS 
-BEGIN 
-    DECLARE 
-    CURSOR customer_data IS 
-            select * from CUSTOMER; 
-    CURSOR item_data IS 
-            select * from ITEM; 
+CREATE OR REPLACE FUNCTION WithDiscount (list_price NUMBER, discount NUMBER)  
+RETURN NUMBER  
+AS  
+BEGIN  
+    RETURN ROUND(list_price - (list_price * discount),2);  
+END; 
+ 
+ 
+CREATE OR REPLACE FUNCTION WithSalesTax (list_price NUMBER)  
+RETURN NUMBER  
+AS  
+BEGIN  
+    RETURN ROUND(list_price * 1.06,2);  
+END; 
+ 
+ 
+ 
+ 
+CREATE OR REPLACE PROCEDURE purchase_list (in_credit_limit NUMBER) IS  
+BEGIN  
+    DECLARE  
+    CURSOR customer_data IS  
+            select * from CUSTOMER;  
+    CURSOR item_data IS  
+            select * from ITEM;  
+      
+    v_CUSTOMER CUSTOMER%rowtype;  
+    v_ITEM ITEM%rowtype;  
+    credit_limit NUMBER;  
+    myname CUSTOMER.first_name%type;  
+    item_name ITEM.item_name%type; 
      
-    v_CUSTOMER CUSTOMER%rowtype; 
-    v_ITEM ITEM%rowtype; 
-    credit_limit NUMBER; 
-    myname CUSTOMER.first_name%type; 
-    item_name ITEM.item_name%type;
-    
+BEGIN  
+        credit_limit:=0;  
+        myname := 'EL';  
+        FOR v_CUSTOMER IN customer_data 
+            LOOP  
+                IF v_CUSTOMER.first_name = myname  
+                THEN credit_limit := in_credit_limit;  
+                ELSE  
+                    credit_limit :=100;  
+                END IF;  
+                  
+                FOR v_ITEM IN item_data  
+                LOOP  
+                    IF v_ITEM.list_price <= credit_limit 
+                    THEN  
+                    DBMS_OUTPUT.PUT_LINE(v_CUSTOMER.first_name || ' can afford to buy ' || v_ITEM.item_name);  
+                    END IF;  
+                END LOOP;  
+            END LOOP;  
+    END;  
+END; 
+ 
+ 
+CREATE OR REPLACE PACKAGE simple_store 
+IS 
+ PROCEDURE purchase_list (in_credit_limit NUMBER); 
+ FUNCTION WithSalesTax (list_price NUMBER) RETURN NUMBER; 
+ FUNCTION WithDiscount (list_price NUMBER, discount NUMBER) RETURN NUMBER; 
+ END; 
+  
+  
+  
+  
+CREATE VIEW customer_by_state AS  
+select  
+customer.first_name,  
+customer.last_name,  
+address.state  
+from  
+address left join customer on address.customer_id =  
+customer.customer_id;  
+  
+CREATE VIEW customer_order_detail AS  
+select  
+customer.first_name,  
+customer.last_name,  
+order_detail.order_id,  
+item.item_name,  
+line_item.quantity,  
+simple_store.WithSalesTax(line_item.quantity *  
+item.list_price) total  
+from  
+customer left join order_detail on CUSTOMER.customer_id =  
+order_detail.customer_id  
+left join line_item on order_detail.order_id =  
+line_item.order_id  
+left join item on line_item.item_id = item.item_id;  
+ 
+ 
+ 
+ 
+ 
+CREATE OR REPLACE TRIGGER customer_log_insert 
+AFTER INSERT ON CUSTOMER 
+FOR EACH ROW 
+DECLARE 
 BEGIN 
-        credit_limit:=0; 
-        myname := 'EL'; 
-        FOR v_CUSTOMER IN customer_data
-            LOOP 
-                IF v_CUSTOMER.first_name = myname 
-                THEN credit_limit := in_credit_limit; 
-                ELSE 
-                    credit_limit :=100; 
-                END IF; 
-                 
-                FOR v_ITEM IN item_data 
-                LOOP 
-                    IF v_ITEM.list_price <= credit_limit
-                    THEN 
-                    DBMS_OUTPUT.PUT_LINE(v_CUSTOMER.first_name || ' can afford to buy ' || v_ITEM.item_name); 
-                    END IF; 
-                END LOOP; 
-            END LOOP; 
-    END; 
+  INSERT INTO CUSTOMER_LOG (event_type, event_date, customer_id, first_name, last_name, username, credit_limit) 
+  VALUES ('insert', SYSDATE, :new.customer_id, :new.first_name, :new.last_name, :new.username, :new.credit_limit); 
+END; 
+ 
+CREATE OR REPLACE TRIGGER customer_log_update 
+AFTER UPDATE ON CUSTOMER 
+FOR EACH ROW 
+DECLARE 
+BEGIN 
+  INSERT INTO CUSTOMER_LOG (event_type, event_date, customer_id, first_name, last_name, username, credit_limit) 
+  VALUES ('update', SYSDATE, :new.customer_id, :new.first_name, :new.last_name, :new.username, :new.credit_limit); 
+END; 
+ 
+CREATE OR REPLACE TRIGGER order_log_insert 
+AFTER INSERT ON ORDER_DETAIL 
+FOR EACH ROW 
+DECLARE 
+BEGIN 
+  INSERT INTO ORDER_DETAIL_LOG (event_type, event_date, order_id, customer_id, order_date, order_status) 
+  VALUES ('insert', SYSDATE, :new.order_id, :new.customer_id, :new.order_date, :new.order_status); 
+END; 
+ 
+CREATE OR REPLACE TRIGGER order_log_update 
+AFTER UPDATE ON ORDER_DETAIL 
+FOR EACH ROW 
+DECLARE 
+BEGIN 
+  INSERT INTO ORDER_DETAIL_LOG (event_type, event_date, order_id, customer_id, order_date, order_status) 
+  VALUES ('update', SYSDATE, :new.order_id, :new.customer_id, :new.order_date, :new.order_status); 
 END;
 
+/
 
-CREATE OR REPLACE PACKAGE simple_store
-IS
- PROCEDURE purchase_list (in_credit_limit NUMBER);
- FUNCTION WithSalesTax (list_price NUMBER) RETURN NUMBER;
- FUNCTION WithDiscount (list_price NUMBER, discount NUMBER) RETURN NUMBER;
+CREATE OR REPLACE FUNCTION WithDiscount (list_price NUMBER, discount NUMBER)  
+RETURN NUMBER  
+AS  
+BEGIN  
+    RETURN ROUND(list_price - (list_price * discount),2);  
+END;
+
+/
+
+CREATE OR REPLACE FUNCTION WithSalesTax (list_price NUMBER)  
+RETURN NUMBER  
+AS  
+BEGIN  
+    RETURN ROUND(list_price * 1.06,2);  
+END;
+
+/
+
+CREATE OR REPLACE PROCEDURE purchase_list (in_credit_limit NUMBER) IS  
+BEGIN  
+    DECLARE  
+    CURSOR customer_data IS  
+            select * from CUSTOMER;  
+    CURSOR item_data IS  
+            select * from ITEM;  
+      
+    v_CUSTOMER CUSTOMER%rowtype;  
+    v_ITEM ITEM%rowtype;  
+    credit_limit NUMBER;  
+    myname CUSTOMER.first_name%type;  
+    item_name ITEM.item_name%type; 
+     
+BEGIN  
+        credit_limit:=0;  
+        myname := 'EL';  
+        FOR v_CUSTOMER IN customer_data 
+            LOOP  
+                IF v_CUSTOMER.first_name = myname  
+                THEN credit_limit := in_credit_limit;  
+                ELSE  
+                    credit_limit :=100;  
+                END IF;  
+                  
+                FOR v_ITEM IN item_data  
+                LOOP  
+                    IF v_ITEM.list_price <= credit_limit 
+                    THEN  
+                    DBMS_OUTPUT.PUT_LINE(v_CUSTOMER.first_name || ' can afford to buy ' || v_ITEM.item_name);  
+                    END IF;  
+                END LOOP;  
+            END LOOP;  
+    END;  
+END; 
+ 
+
+
+/
+
+CREATE OR REPLACE PACKAGE simple_store 
+IS 
+ PROCEDURE purchase_list (in_credit_limit NUMBER); 
+ FUNCTION WithSalesTax (list_price NUMBER) RETURN NUMBER; 
+ FUNCTION WithDiscount (list_price NUMBER, discount NUMBER) RETURN NUMBER; 
  END;
- 
- 
- 
- 
-CREATE VIEW customer_by_state AS 
-select 
-customer.first_name, 
-customer.last_name, 
-address.state 
-from 
-address left join customer on address.customer_id = 
-customer.customer_id; 
- 
-CREATE VIEW customer_order_detail AS 
-select 
-customer.first_name, 
-customer.last_name, 
-order_detail.order_id, 
-item.item_name, 
-line_item.quantity, 
-simple_store.WithSalesTax(line_item.quantity * 
-item.list_price) total 
-from 
-customer left join order_detail on CUSTOMER.customer_id = 
-order_detail.customer_id 
-left join line_item on order_detail.order_id = 
-line_item.order_id 
-left join item on line_item.item_id = item.item_id; 
 
+/
 
+CREATE VIEW customer_by_state AS  
+select  
+customer.first_name,  
+customer.last_name,  
+address.state  
+from  
+address left join customer on address.customer_id =  
+customer.customer_id
+;
 
+CREATE VIEW customer_order_detail AS  
+select  
+customer.first_name,  
+customer.last_name,  
+order_detail.order_id,  
+item.item_name,  
+line_item.quantity,  
+simple_store.WithSalesTax(line_item.quantity *  
+item.list_price) total  
+from  
+customer left join order_detail on CUSTOMER.customer_id =  
+order_detail.customer_id  
+left join line_item on order_detail.order_id =  
+line_item.order_id  
+left join item on line_item.item_id = item.item_id
+;
 
-
-
-create or replace trigger customer_after_logger_insert 
-after insert on CUSTOMER 
-for each row
-begin
-insert into CUSTOMER_LOG 
-values ('INSERT', :new.customer_id,:new.first_name, :new.last_name, :new.username, :new.credit_limit, SYSDATE);
-end;
-
-
-
-
-CREATE OR REPLACE TRIGGER customer_after_logger_update 
-AFTER UPDATE  
-ON CUSTOMER   
-FOR EACH ROW   
-BEGIN   
-INSERT INTO CUSTOMER_LOG VALUES   
-    ('UPDATE', :old.customer_id, :old.first_name, :old.last_name, :old.username, :new.credit_limit, SYSDATE);   
-END;
-
-
-
-
-CREATE OR REPLACE TRIGGER customer_after_logger_delete
-AFTER DELETE ON CUSTOMER 
-FOR EACH ROW
+CREATE OR REPLACE TRIGGER customer_log_insert 
+AFTER INSERT ON CUSTOMER 
+FOR EACH ROW 
+DECLARE 
 BEGIN 
-  INSERT INTO CUSTOMER_LOG 
-VALUES ('DELETE', :old.customer_id, :old.first_name, :old.last_name, :old.username, :new.credit_limit, SYSDATE);
+  INSERT INTO CUSTOMER_LOG (event_type, event_date, customer_id, first_name, last_name, username, credit_limit) 
+  VALUES ('insert', SYSDATE, :new.customer_id, :new.first_name, :new.last_name, :new.username, :new.credit_limit); 
 END;
 
+/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-create or replace trigger Order_detail_after_logger_insert 
-after insert on ORDER_DETAIL 
-for each row
-begin
-insert into ORDER_DETAIL_LOG 
-values ('INSERT', :new.customer_id, :new.order_id, :new.order_date, :new.order_status, SYSDATE);
-end;
-
-
-
-
-CREATE OR REPLACE TRIGGER Order_detail_after_logger_update 
-AFTER UPDATE  
-ON ORDER_DETAIL   
-FOR EACH ROW   
-BEGIN   
-INSERT INTO ORDER_DETAIL_LOG VALUES   
-    ('UPDATE', :old.customer_id, :old.order_id, :old.order_date, :old.order_status, SYSDATE);   
-END;
-
-
-
-
-CREATE OR REPLACE TRIGGER Order_detail_after_logger_delete
-AFTER DELETE ON ORDER_DETAIL 
-FOR EACH ROW
+CREATE OR REPLACE TRIGGER customer_log_update 
+AFTER UPDATE ON CUSTOMER 
+FOR EACH ROW 
+DECLARE 
 BEGIN 
-  INSERT INTO ORDER_DETAIL_LOG 
-VALUES ('DELETE', :old.customer_id, :old.order_id, :old.order_date, :old.order_status, SYSDATE);
+  INSERT INTO CUSTOMER_LOG (event_type, event_date, customer_id, first_name, last_name, username, credit_limit) 
+  VALUES ('update', SYSDATE, :new.customer_id, :new.first_name, :new.last_name, :new.username, :new.credit_limit); 
+END;
+
+/
+
+CREATE OR REPLACE TRIGGER order_log_insert 
+AFTER INSERT ON ORDER_DETAIL 
+FOR EACH ROW 
+DECLARE 
+BEGIN 
+  INSERT INTO ORDER_DETAIL_LOG (event_type, event_date, order_id, customer_id, order_date, order_status) 
+  VALUES ('insert', SYSDATE, :new.order_id, :new.customer_id, :new.order_date, :new.order_status); 
+END;
+
+/
+
+CREATE OR REPLACE TRIGGER order_log_update 
+AFTER UPDATE ON ORDER_DETAIL 
+FOR EACH ROW 
+DECLARE 
+BEGIN 
+  INSERT INTO ORDER_DETAIL_LOG (event_type, event_date, order_id, customer_id, order_date, order_status) 
+  VALUES ('update', SYSDATE, :new.order_id, :new.customer_id, :new.order_date, :new.order_status); 
 END;

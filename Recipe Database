@@ -1,9 +1,7 @@
 CREATE TABLE recipes (
   recipe_id INT PRIMARY KEY,
   recipe_name VARCHAR(255),
-  cuisine_type VARCHAR(255),
   cuisine VARCHAR(255) NOT NULL,
-  difficulty VARCHAR(255) NOT NULL,
   prep_time INT,
   cook_time INT
 );
@@ -44,75 +42,77 @@ CREATE TABLE ratings (
 
 INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-  (1, 'Jollof Rice', 'West African', 20, 60);
+(1, 'Jollof Rice', 'West African', '20', '60');
 
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
-  (1, 'rice', 'grains'),
-  (2, 'onion', 'vegetables'),
-  (3, 'tomato', 'vegetables'),
-  (4, 'chicken', 'meat'),
-  (5, 'garlic', 'spices');
+(1, 'rice', 'grains'),
+(2, 'onion', 'vegetables'),
+(3, 'tomato', 'vegetables'),
+(4, 'chicken', 'meat'),
+(5, 'garlic', 'spices');
 
 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
 VALUES
-  (1, 1, '2 cups'),
-  (1, 2, '1 large'),
-  (1, 3, '1 can');
+(1, 1, '2 cups'),
+(1, 2, '1 large'),
+(1, 3, '1 can');
 
 INSERT INTO steps (step_id, recipe_id, description, step_order)
 VALUES
-  (1, 1, 'Cook rice according to package directions', 1),
-  (2, 1, 'Saute onion and garlic in oil until softened', 2),
-  (3, 1, 'Add tomato and cook until sauce thickens', 3),
-  (4, 1, 'Add rice and stir to combine', 4);
+(1, 1, 'Cook rice according to package directions', 1),
+(2, 1, 'Saute onion and garlic in oil until softened', 2),
+(3, 1, 'Add tomato and cook until sauce thickens', 3),
+(4, 1, 'Add rice and stir to combine', 4);
 
 
 INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-  (2, 'Piri Piri Chicken', 'Southern African', 30, 45);
+(2, 'Piri Piri Chicken', 'Southern African', '30', '45');
 
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
-  (6, 'chicken', 'meat'),
-  (7, 'piri piri sauce', 'sauces');
+(6, 'chicken', 'meat'),
+(7, 'piri piri sauce', 'sauces');
 
 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
 VALUES
-  (2, 6, '4 pieces'),
-  (2, 7, '1/2 cup');
+(2, 6, '4 pieces'),
+(2, 7, '1/2 cup');
 
 INSERT INTO steps (step_id, recipe_id, description, step_order)
 VALUES
-  (5, 2, 'Grill chicken until cooked through', 1),
-  (6, 2, 'Mix piri piri sauce and brush onto chicken', 2);
+(5, 2, 'Grill chicken until cooked through', 1),
+(6, 2, 'Mix piri piri sauce and brush onto chicken', 2);
 
 
 INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-  (3, 'Chakalaka', 'South African', 15, 30);
+(3, 'Chakalaka', 'South African', '15', '30');
 
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
-  (8, 'canned baked beans', 'canned goods'),
-  (9, 'carrots', 'vegetables'),
-  (10, 'green bell pepper', 'vegetables'),
-  (11, 'onion', 'vegetables');
+(8, 'canned baked beans', 'canned goods'),
+(9, 'carrots', 'vegetables'),
+(10, 'green bell pepper', 'vegetables'),
+(11, 'onion', 'vegetables');
 
 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
 VALUES
-  (3, 8, '1 can'),
-  (3, 9, '2 large'),
-  (3, 10, '1 large'),
-  (3, 11, '1 large');
+(3, 8, '1 can'),
+(3, 9, '2 large'),
+(3, 10, '1 large'),
+(3, 11, '1 large');
 
 INSERT INTO steps (step_id, recipe_id, description, step_order)
 VALUES
-  (7, 3, 'Saute onion in oil until softened', 1),
-  (8, 3, 'Add carrots and bell pepper and cook until softened', 2),
-  (9, 3, 'Add baked beans and simmer for 5 minutes', 3);
+(7, 3, 'Saute onion in oil until softened', 1),
+(8, 3, 'Add carrots and bell pepper and cook until softened', 2),
+(9, 3, 'Add baked beans and simmer for 5 minutes', 3);
 
-
+-- Add Tagine recipe (continued)
+INSERT INTO recipes (recipe_name, cuisine_type, prep_time, cook_time)
+VALUES (4,'Tagine', 'African', 30, 120);
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
   (12, 'lamb', 'meat'),
@@ -143,10 +143,11 @@ VALUES
   (15, 4, 'Transfer mixture to an oven-safe dish', 6),
   (16, 4, 'Cover and bake for 1 hour', 7),
   (17, 4, 'Uncover and bake for an additional 15 minutes', 8);
--- Add Yassa Chicken recipe
-INSERT INTO recipes (recipe_id, recipe_name, cuisine, difficulty, cook_time)
+
+
+INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-  (5, 'Yassa Chicken', 'African', 'Medium', '1 hour');
+(5, 'Yassa Chicken', 'African', 60, 60);
 
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
@@ -180,88 +181,70 @@ VALUES
   (25, 5, 'Cover and cook for 30-40 minutes or until chicken is cooked through', 8);
 
 
+
 INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-  (5, 'Hummus', 'Middle Eastern', 15, 0);
+  (6, 'Hummus', 'Middle Eastern', 15, 0),
+  (7, 'Shawarma', 'Middle Eastern', 60, 30);
 
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
-  (19, 'chickpeas', 'canned goods'),
-  (20, 'tahini', 'condiments'),
-  (21, 'garlic', 'spices'),
-  (22, 'lemon juice', 'fruits'),
-  (23, 'olive oil', 'oils'),
-  (24, 'salt', 'spices');
+  (26, 'chickpeas', 'canned goods'),
+  (27, 'tahini', 'condiments'),
+  (28, 'garlic', 'spices'),
+  (29, 'lemon juice', 'fruits'),
+  (30 'olive oil', 'oils'),
+  (31 'salt', 'spices'),
+  (32, 'boneless chicken thighs', 'meat'),
+  (33, 'cumin', 'spices'),
+  (34, 'paprika', 'spices'),
+  (35, 'yogurt', 'dairy'),
+  (36, 'pita bread', 'breads');
 
 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
 VALUES
-  (5, 19, '1 can'),
-  (5, 20, '1/4 cup'),
-  (5, 21, '2 cloves'),
-  (5, 22, '2 tbsp'),
-  (5, 23, '2 tbsp'),
-  (5, 24, '1/2 tsp');
+  (1, 1, '1 can'),
+  (1, 2, '1/4 cup'),
+  (1, 3, '2 cloves'),
+  (1, 4, '2 tbsp'),
+  (1, 5, '2 tbsp'),
+  (1, 6, '1/2 tsp'),
+  (2, 7, '2 lb'),
+  (2, 5, '1/4 cup'),
+  (2, 4, '1/4 cup'),
+  (2, 3, '3 cloves'),
+  (2, 8, '1 tsp'),
+  (2, 9, '1 tsp'),
+  (2, 10, '1/2 cup'),
+  (2, 11, '4 pieces');
 
 INSERT INTO steps (step_id, recipe_id, description, step_order)
 VALUES
-  (14, 5, 'Drain and rinse chickpeas', 1),
-  (15, 5, 'Combine chickpeas, tahini, garlic, lemon juice, olive oil, and salt in a food processor', 2),
-  (16, 5, 'Blend until smooth', 3),
-  (17, 5, 'Serve with pita bread or vegetables', 4);
-
+  (26, 1, 'Drain and rinse chickpeas', 1),
+  (27, 1, 'Combine chickpeas, tahini, garlic, lemon juice, olive oil, and salt in a food processor', 2),
+  (28, 1, 'Blend until smooth', 3),
+  (29, 1, 'Serve with pita bread or vegetables', 4),
+  (30, 2, 'Mix olive oil, lemon juice, garlic, cumin, and paprika in a bowl', 1),
+  (31, 2, 'Add chicken to the bowl and coat with the marinade', 2),
+  (32, 2, 'Marinate chicken in the fridge for 30 minutes', 3),
+  (33, 2, 'Preheat grill to medium-high heat', 4),
+  (34, 2, 'Grill chicken for 6-8 minutes per side, or until cooked through', 5),
+  (35, 2, 'Let chicken rest for 5 minutes before slicing', 6),
+  (36, 2, 'Mix yogurt and garlic in a bowl to make the sauce', 7),
+  (37, 2, 'Heat pita bread on the grill or in the oven', 8),
+  (38, 2, 'Assemble the shawarma by filling the pita bread with sliced chicken and yogurt sauce', 9);
 
 
 INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-  (5, 'Shawarma', 'Middle Eastern', 60, 30);
-
+(8, 'Fesenjan', 'Persian', 30, 90);
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
-  (19, 'boneless chicken thighs', 'meat'),
-  (20, 'olive oil', 'oils'),
-  (21, 'lemon juice', 'fruits'),
-  (22, 'garlic', 'spices'),
-  (23, 'cumin', 'spices'),
-  (24, 'paprika', 'spices'),
-  (25, 'yogurt', 'dairy'),
-  (26, 'pita bread', 'breads');
-
-INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
-VALUES
-  (5, 19, '2 lb'),
-  (5, 20, '1/4 cup'),
-  (5, 21, '1/4 cup'),
-  (5, 22, '3 cloves'),
-  (5, 23, '1 tsp'),
-  (5, 24, '1 tsp'),
-  (5, 25, '1/2 cup'),
-  (5, 26, '4 pieces');
-
-INSERT INTO steps (step_id, recipe_id, description, step_order)
-VALUES
-  (16, 5, 'Mix olive oil, lemon juice, garlic, cumin, and paprika in a bowl', 1),
-  (17, 5, 'Add chicken to the bowl and coat with the marinade', 2),
-  (18, 5, 'Marinate chicken in the fridge for 30 minutes', 3),
-  (19, 5, 'Preheat grill to medium-high heat', 4),
-  (20, 5, 'Grill chicken for 6-8 minutes per side, or until cooked through', 5),
-  (21, 5, 'Let chicken rest for 5 minutes before slicing', 6),
-  (22, 5, 'Mix yogurt and garlic in a bowl to make the sauce', 7),
-  (23, 5, 'Heat pita bread on the grill or in the oven', 8),
-  (24, 5, 'Assemble the shawarma by filling the pita bread with sliced chicken and yogurt sauce', 9);
-
-
-INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
-VALUES
-(5, 'Fesenjan', 'Persian', 30, 90);
-
-INSERT INTO ingredients (ingredient_id, ingredient_name, category)
-VALUES
-(19, 'chicken', 'meat'),
-(20, 'walnuts', 'nuts'),
-(21, 'pomegranate molasses', 'sauces'),
-(22, 'onion', 'vegetables'),
+(37, 'chicken', 'meat'),
+(38, 'walnuts', 'nuts'),
+(39, 'pomegranate molasses', 'sauces'),
+(40, 'onion', 'vegetables'),
 (23, 'vegetable oil', 'oils');
-
 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
 VALUES
 (5, 19, '1 whole chicken'),
@@ -269,30 +252,26 @@ VALUES
 (5, 21, '1/2 cup'),
 (5, 22, '1 large'),
 (5, 23, '1/4 cup');
-
 INSERT INTO steps (step_id, recipe_id, description, step_order)
 VALUES
-(19, 5, 'Roast walnuts in a 350 degree F oven for 10 minutes', 1),
-(20, 5, 'Brown chicken in oil in a large pot', 2),
-(21, 5, 'Remove chicken and saute onion in the same pot until softened', 3),
-(22, 5, 'Add pomegranate molasses, walnuts, and 3 cups of water to the pot', 4),
-(23, 5, 'Return chicken to the pot and simmer for 1 hour, stirring occasionally', 5);
+(39, 5, 'Roast walnuts in a 350 degree F oven for 10 minutes', 1),
+(40, 5, 'Brown chicken in oil in a large pot', 2),
+(41, 5, 'Remove chicken and saute onion in the same pot until softened', 3),
+(42, 5, 'Add pomegranate molasses, walnuts, and 3 cups of water to the pot', 4),
 
 
 INSERT INTO recipes (recipe_id, recipe_name, cuisine_type, prep_time, cook_time)
 VALUES
-(6, 'Shakshuka', 'Israeli', 10, 25);
-
+(9, 'Shakshuka', 'Israeli', 10, 25);
 INSERT INTO ingredients (ingredient_id, ingredient_name, category)
 VALUES
-(24, 'eggs', 'dairy'),
-(25, 'tomatoes', 'vegetables'),
-(26, 'bell pepper', 'vegetables'),
-(27, 'onion', 'vegetables'),
-(28, 'garlic', 'spices'),
-(29, 'paprika', 'spices'),
-(30, 'cumin', 'spices');
-
+(41, 'eggs', 'dairy'),
+(42, 'tomatoes', 'vegetables'),
+(43, 'bell pepper', 'vegetables'),
+(44, 'onion', 'vegetables'),
+(45, 'garlic', 'spices'),
+(46, 'paprika', 'spices'),
+(47, 'cumin', 'spices');
 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount)
 VALUES
 (6, 24, '6 large'),
@@ -302,11 +281,10 @@ VALUES
 (6, 28, '2 cloves'),
 (6, 29, '1 tsp'),
 (6, 30, '1 tsp');
-
 INSERT INTO steps (step_id, recipe_id, description, step_order)
 VALUES
-(24, 6, 'Saute onion and bell pepper in oil until softened', 1),
-(25, 6, 'Add garlic and spices and cook for 1 minute', 2),
-(26, 6, 'Add chopped tomatoes and simmer for 10 minutes', 3),
-(27, 6, 'Make wells in the tomato mixture and crack an egg into each well', 4),
-(28, 6, 'Cover and cook until eggs are set, about 10 minutes');
+(44, 6, 'Saute onion and bell pepper in oil until softened', 1),
+(45, 6, 'Add garlic and spices and cook for 1 minute', 2),
+(46, 6, 'Add chopped tomatoes and simmer for 10 minutes', 3),
+(47, 6, 'Make wells in the tomato mixture and crack an egg into each well', 4),
+(48, 6, 'Cover and cook until eggs are set, about 10 minutes', 5);
